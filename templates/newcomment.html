@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <h2>new comment</h2>
 <form method="post" class="comment">
@@ -9,9 +8,7 @@
         <textarea name="comment">{{comment}}</textarea>
         <input type="hidden" name="author" value="{{username}}">
     </label>
-
-    <div class="error">{{error}}</div>
-
-    <input type="submit">
+	<div class="error">{{error}}</div>
+	<input type="submit">
 </form>
 {% endblock %}

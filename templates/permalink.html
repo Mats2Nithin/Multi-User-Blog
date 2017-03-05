@@ -5,46 +5,33 @@
 {% if user %}
 <div>
 	{% if user.name == blog.author %}
-        
-            <a href="/blog/{{blog.key().id()}}/edit">&#9998; Edit</a>
-       
-            <a href="/blog/{{blog.key().id()}}/delete" class="like-button">&#10006; Delete</a>
-        
-        {% else %}
-            <a href="/blog/{{blog.key().id()}}/like">&#9829; Like</a>
-        
-        {% endif %}
+        <a href="/blog/{{blog.key().id()}}/edit">&#9998; Edit</a>
+        <a href="/blog/{{blog.key().id()}}/delete" class="like-button">&#10006; Delete</a>
+    {% else %}
+        <a href="/blog/{{blog.key().id()}}/like">&#9829; Like</a>
+    {% endif %}
 </div>
 <a href="/blog/{{blog.key().id()}}/comment">add new comment</a>
 {% endif %}
-
 {% if user and blog.comments %}
-<div>
-    <span>{{blog.comments.count()}} comments</span>
-</div>
-<hr>
-
-<div class="blog-comments">
-    <h2>Comments</h2>
-
-    {% for c in blog.comments %}
-
-    <div class="comment">
-        <div class="comment-author">{{ c.parent().name }} says:</div>
-        <p class="comment-content">{{ c.comment }}</p>
-        {% if user.name == c.author %}
-        <a href="/blog/{{blog.key().id()}}/updatecomment/{{c.key().id()}}">update</a>
-        <span class="separator"> | </span>
-        <a href="/blog/{{blog.key().id()}}/deletecomment/{{c.key().id()}}">delete</a>
-        {% endif %}
-    </div>
+	<div>
+		<span>{{blog.comments.count()}} comments</span>
+	</div>
 	<hr>
-    {% endfor %}
-
-   
-
-    {% endif %}
-
-</div>
-
+	<div class="blog-comments">
+		<h2>Comments</h2>
+		{% for c in blog.comments %}
+			<div class="comment">
+			<div class="comment-author">{{ c.parent().name }} says:</div>
+			<p class="comment-content">{{ c.comment }}</p>
+			{% if user.name == c.author %}
+				<a href="/blog/{{blog.key().id()}}/updatecomment/{{c.key().id()}}">update</a>
+				<span class="separator"> | </span>
+				<a href="/blog/{{blog.key().id()}}/deletecomment/{{c.key().id()}}">delete</a>
+			{% endif %}
+			</div>
+			<hr>
+		{% endfor %}
+	</div>
+{% endif %}
 {% endblock %}

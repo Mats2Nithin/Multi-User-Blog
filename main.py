@@ -386,7 +386,7 @@ class Create(Handler):
         content=self.request.get("content")
         author=self.user.name
         if title and content:
-            a=Blog(parent=blog_key(),title=title,author=author,content=content,likes=0, liked_by=[])
+            a=Blog(parent=blog_key(),title=title,author=author,content=content,likes=0,liked_by=[])
             a.put()
             self.redirect('/blog/%s' % str(a.key().id()))
         else:
@@ -394,4 +394,16 @@ class Create(Handler):
             self.render("front.html",title=title,content=content,error=error)
             
 
-app = webapp2.WSGIApplication([('/blog/([0-9]+)', Home),('/blog/([0-9]+)/comment',AddComment),('/blog/([0-9]+)/updatecomment/([0-9]+)',UpdateComment),('/blog/([0-9]+)/deletecomment/([0-9]+)',DeleteComment),('/blog/([0-9]+)/delete',DeletePost),('/blog/signup',Signup),('/blog/([0-9]+)/edit',EditPost),('/blog/([0-9]+)/like',LikePost),('/blog/?', FrontPage),('/blog/welcome',Welcome),('/blog/logout',Logout),('/blog/login',Login),('/blog/newpost', Create)], debug=True)
+app = webapp2.WSGIApplication([('/blog/([0-9]+)', Home),
+                               ('/blog/([0-9]+)/comment',AddComment),
+                               ('/blog/([0-9]+)/updatecomment/([0-9]+)',UpdateComment),
+                               ('/blog/([0-9]+)/deletecomment/([0-9]+)',DeleteComment),
+                               ('/blog/([0-9]+)/delete',DeletePost),
+                               ('/blog/signup',Signup),
+                               ('/blog/([0-9]+)/edit',EditPost),
+                               ('/blog/([0-9]+)/like',LikePost),
+                               ('/blog/?', FrontPage),
+                               ('/blog/welcome',Welcome),
+                               ('/blog/logout',Logout),
+                               ('/blog/login',Login),
+                               ('/blog/newpost', Create)], debug=True)

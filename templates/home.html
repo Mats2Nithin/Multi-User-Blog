@@ -1,10 +1,7 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-  {% for a in blogs %}
-    {{ a.render() | safe }}
-    <br>
-  {% endfor %}
-
+	{% for a in blogs %}
+		{{ a.render() | safe }}
+		<br>
+	{% endfor %}
 {% endblock %}
