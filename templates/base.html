@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/static/main.css" />
+		<title>Blog</title>
+	</head>
+	<style type="text/css">
+		h1{
+			text-align: center;
+		}
+		a{
+			color: #999;
+		}
+	</style>
+	<body>
+		<a href="/blog/?"> <h1>My Blog</h1> </a>
+		{% block content %}
+		{% endblock %}
+	</body>
+</html>
