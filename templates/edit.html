@@ -2,14 +2,18 @@
 {% block content %}
 <h2>Update post</h2>
 <form method="post">
+	<div style="Color: #999">
+	<a href="/blog/{{blog.key().id()}}">&#10006; Cancel edit</a>
+	</div>
     <label>
-        <div>subject</div>
-        <input type="text" name="Title" value="{{title}}">
+        <div>Title</div>
+        <input type="text" name="Title" value="{{blog.title}}">
     </label>
 	<label>
         <div>blog</div>
-        <textarea name="Content">{{content}}</textarea>
+        <textarea name="Content">{{blog.content}}</textarea>
     </label>
 	<input type="submit">
 </form>
+
 {% endblock %}

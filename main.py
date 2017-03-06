@@ -110,6 +110,7 @@ class User(db.Model):
 def blog_key(name = 'default'):
     return db.Key.from_path('blog', name)
 
+
 #database to store blog
 class Blog(db.Model):
     title=db.StringProperty(required=True)
@@ -223,7 +224,6 @@ class Home(Handler):
     def get(self, blog_id):
         key = db.Key.from_path('Blog', int(blog_id), parent=blog_key())
         blog = db.get(key)
-
         if not blog:
             self.error(404)
             return
@@ -238,6 +238,8 @@ class LikePost(Handler):
         else:
             key = db.Key.from_path('Blog', int(blog_id), parent=blog_key())
             blog = db.get(key)
+            if not blog:
+                self.redirect('/blog/login')
             author = blog.author
             logged_user = self.user.name
 
@@ -259,11 +261,13 @@ class EditPost(Handler):
         else:
             key = db.Key.from_path('Blog', int(blog_id), parent=blog_key())
             blog= db.get(key)
+            if not blog:
+                self.redirect('/blog/login')
             author = blog.author
             loggedUser = self.user.name
 
             if author == loggedUser:
-                self.render("edit.html", title=blog.title,content=blog.content)
+                self.render("edit.html",blog=blog)
             else:
                 msg="You do not have permission to edit this post"
                 self.render("error.html",error=msg)
@@ -274,6 +278,8 @@ class EditPost(Handler):
         else:
             key = db.Key.from_path('Blog', int(blog_id), parent=blog_key())
             p = db.get(key)
+            if not p:
+                self.redirect('/blog/login')
             p.title = self.request.get('Title')
             p.content = self.request.get('Content')
             p.put()
@@ -286,6 +292,8 @@ class DeletePost(Handler):
         else:
             key = db.Key.from_path('Blog', int(blog_id), parent=blog_key())
             blog = db.get(key)
+            if not blog:
+                self.redirect('/blog/login')
             author = blog.author
             loggedUser = self.user.name
 
@@ -345,7 +353,13 @@ class UpdateComment(Handler):
         blog = Blog.get_by_id(int(blog_id), parent=blog_key())
         comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
         if comment:
-            self.render("newcomment.html", title=blog.title, content=blog.content, comment=comment.comment,pkey=blog.key())
+            author = comment.author
+            logged_user = self.user.name
+            if author==logged_user:
+                self.render("newcomment.html", title=blog.title, content=blog.content, comment=comment.comment,pkey=blog.key())
+            else:
+                msg="You are not authorised to edit this comment"
+                self.render("error.html",error=msg)
         else:
             msg="Something went wrong"
             self.render("error.html",error=msg)
@@ -362,8 +376,14 @@ class DeleteComment(Handler):
     def get(self, blog_id, comment_id):
         comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
         if comment:
-            comment.delete()
-            self.redirect('/blog/%s' % str(blog_id))
+            author = comment.author
+            logged_user = self.user.name
+            if author==logged_user:
+                comment.delete()
+                self.redirect('/blog/%s' % str(blog_id))
+            else:
+                msg="You are not authorised to delete this comment"
+                self.render("error.html",error=msg)
         else:
             msg="Something went wrong"
             self.render("error.html",error=msg)
