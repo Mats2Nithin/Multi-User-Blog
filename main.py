@@ -280,10 +280,18 @@ class EditPost(Handler):
             p = db.get(key)
             if not p:
                 self.redirect('/blog/login')
-            p.title = self.request.get('Title')
-            p.content = self.request.get('Content')
-            p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+            author = p.author
+            loggedUser = self.user.name
+            if author == loggedUser:
+                p.title = self.request.get('Title')
+                p.content = self.request.get('Content')
+                if p.title and pcontent:
+                    p.put()
+                self.redirect('/blog/%s' % str(p.key().id()))
+            else:
+                msg="You do not have permission to edit this post"
+                self.render("error.html",error=msg)
+            
 #for deleting the blog			
 class DeletePost(Handler):
     def get(self, blog_id):
@@ -319,10 +327,11 @@ class Comment(db.Model):
 class AddComment(Handler):
     def get(self, blog_id):
         if not self.user:
-            self.redirect("/blog/login")
+            self.redirect('/blog/login')
             return
-
         blog = Blog.get_by_id(int(blog_id), parent=blog_key())
+        if not blog:
+                self.redirect('/blog/login') 
         title = blog.title
         content = blog.content
         self.render("newcomment.html", title=title, content=content,username=self.user.name, pkey=blog.key())
@@ -335,7 +344,7 @@ class AddComment(Handler):
             return
 
         if not self.user:
-            self.redirect('login')
+            self.redirect('/blog/login')
 
         comment = self.request.get('comment')
 
@@ -350,7 +359,12 @@ class AddComment(Handler):
 #to update comments
 class UpdateComment(Handler):
     def get(self, blog_id, comment_id):
+        if not self.user:
+            self.redirect('/blog/login')
         blog = Blog.get_by_id(int(blog_id), parent=blog_key())
+        if not blog:
+            self.error(404)
+            return
         comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
         if comment:
             author = comment.author
@@ -365,10 +379,14 @@ class UpdateComment(Handler):
             self.render("error.html",error=msg)
 
     def post(self, blog_id, comment_id):
+        if not self.user:
+            self.redirect('/blog/login')
         comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
-        if comment.parent().key().id() == self.user.key().id():
-            comment.comment = self.request.get('comment')
-            comment.put()
+        if not comment:
+            self.error(404)
+            return
+        comment.comment = self.request.get('comment')
+        comment.put()
         self.redirect('/blog/%s' % str(blog_id))
 
 #to delete comments
@@ -376,6 +394,8 @@ class DeleteComment(Handler):
     def get(self, blog_id, comment_id):
         comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
         if comment:
+            if not self.user:
+                self.redirect('/blog/login')
             author = comment.author
             logged_user = self.user.name
             if author==logged_user:
